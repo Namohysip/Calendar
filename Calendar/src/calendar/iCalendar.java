@@ -10,12 +10,13 @@ import java.util.ArrayList;
  * @author Noah Higa
  *
  */
-public class EventMaker {
-	
+public class iCalendar {
+	String calendar;
+	String CN;
 	ArrayList<Event> allEvents = new ArrayList<Event>();
 	
-	public EventMaker(){
-		
+	public iCalendar(String commonName){
+		CN = commonName;
 	}
 	
 	/**
@@ -30,7 +31,26 @@ public class EventMaker {
 	 * Creates an ics file based on the events that it is sent
 	 * @param events
 	 */
-	public void createics(Event[] events){
-		
+	public String createics(Event[] events){
+		calendar = "BEGIN:VCALENDAR\nVERSION:1.0\nPRODID:-//Rambutan\n";
+		calendar += "CALSCALE:GEORGIAN\nMETHOD:PUBLISH\n";
+		for(Event e: allEvents){
+			calendar += "BEGIN:VEVENT\nDTSTART:";
+			calendar += e.getDateTimeS();
+			calendar += "\nDTEND:" + e.getDateTimeE();
+			calendar += "\nDTSTAMP:" + e.getTimeStamp();
+			calendar += "\nUID:"; //add in a Unique identification number later
+			calendar += "\nCLASS:" + e.getClassType();
+			calendar += "\nCREATED:" + e.getTimeCreated();
+			calendar += "\nDESCRIPTION:" + e.getDescription();
+			calendar += "\nLAST-MODIFIED:" + e.getLastModified();
+			calendar += "\nLOCATION:" + e.getLocation();
+			calendar += "\nSEQUENCE:" + Integer.toString(e.getSequence());
+			calendar += "\nSTATUS:" + e.getStatus();
+			calendar += "\nSUMMARY:" + e.getSummary();
+			calendar += "\nEND:VEVENT\n";
+		}
+		calendar +="END:VCALENDAR\n";
+		return calendar;
 	}
 }
