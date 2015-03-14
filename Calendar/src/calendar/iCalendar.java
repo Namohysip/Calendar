@@ -3,6 +3,10 @@
  */
 package calendar;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -59,5 +63,22 @@ public class iCalendar {
 		}
 		calendar +="END:VCALENDAR\n";
 		return calendar;
+	}
+	
+	/**
+	 * Writes a file based on the filename given and the .ics content.
+	 * @param calendar
+	 * @param filename
+	 */
+	public void writeics(String calendar, String filename){
+		BufferedWriter write;
+		try{
+			write = new BufferedWriter(new FileWriter(new File(filename)));
+			write.write(calendar);
+			write.close();
+		}
+		catch(IOException e){
+			System.err.println("Error writing file");
+		}
 	}
 }
