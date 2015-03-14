@@ -2,6 +2,11 @@ package calendar;
 import java.io.*;
 public class Driver{
 
+	/**
+	 * Basic driver method that creates the required event to test output.
+	 * TODO: Still needs user input via the console through a Scanner or similar class
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		/*BufferedReader read;
 		try{

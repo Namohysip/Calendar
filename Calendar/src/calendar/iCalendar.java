@@ -11,10 +11,14 @@ import java.util.ArrayList;
  *
  */
 public class iCalendar {
-	String calendar;
-	String CN;
-	ArrayList<Event> allEvents = new ArrayList<Event>();
+	private String calendar;
+	private String CN;
+	private ArrayList<Event> allEvents = new ArrayList<Event>();
 	
+	/**
+	 * Constructor that gives the calendar a common name
+	 * @param commonName
+	 */
 	public iCalendar(String commonName){
 		CN = commonName;
 	}
@@ -28,12 +32,14 @@ public class iCalendar {
 	}
 	
 	/**
-	 * Creates an ics file based on the events that it is sent
-	 * @param events
+	 * Creates an ics file based on the events registered from the addEvent class
 	 */
 	public String createics(){
 		calendar = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Rambutan\n";
 		calendar += "CALSCALE:GEORGIAN\nMETHOD:PUBLISH\n";
+		/*
+		 * For each event, add in a VEVENT to the String representing it
+		 */
 		for(Event e: allEvents){
 			calendar += "BEGIN:VEVENT\nDTSTART:";
 			calendar += e.getDateTimeS();
