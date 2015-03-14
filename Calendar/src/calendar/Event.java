@@ -89,6 +89,7 @@ public class Event {
 	private String status;
 	private String summary;
 	private int sequence;
+	private int priority;
 	/**
 	 * 
 	 * @param description
@@ -98,10 +99,10 @@ public class Event {
 	 * @param timeEnd
 	 * @param classT
 	 */
-	public Event(String description, String summary, String location, String timeStart, String timeEnd, String classT){
+	public Event(String description, String summary, String location, String timeStart, String timeEnd, String classT, int priority){
 		dateTimeS = timeStart;
 		dateTimeE = timeEnd;
-		DateFormat df = new SimpleDateFormat("yyyyMMddTHHmmss");
+		DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
 		Date date = new Date();
 		timeStamp = df.format(date.getTime());
 		classType = classT;
@@ -112,6 +113,12 @@ public class Event {
 		sequence = 0;
 		status = "CONFIRMED";
 		this.summary = summary;
-		
+		this.priority = priority;
+	}
+	public int getPriority() {
+		return priority;
+	}
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 }

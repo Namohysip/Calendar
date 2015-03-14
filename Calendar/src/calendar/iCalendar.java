@@ -31,8 +31,8 @@ public class iCalendar {
 	 * Creates an ics file based on the events that it is sent
 	 * @param events
 	 */
-	public String createics(Event[] events){
-		calendar = "BEGIN:VCALENDAR\nVERSION:1.0\nPRODID:-//Rambutan\n";
+	public String createics(){
+		calendar = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Rambutan\n";
 		calendar += "CALSCALE:GEORGIAN\nMETHOD:PUBLISH\n";
 		for(Event e: allEvents){
 			calendar += "BEGIN:VEVENT\nDTSTART:";
@@ -48,6 +48,7 @@ public class iCalendar {
 			calendar += "\nSEQUENCE:" + Integer.toString(e.getSequence());
 			calendar += "\nSTATUS:" + e.getStatus();
 			calendar += "\nSUMMARY:" + e.getSummary();
+			calendar += "\nPRIORITY:" + e.getPriority();
 			calendar += "\nEND:VEVENT\n";
 		}
 		calendar +="END:VCALENDAR\n";
