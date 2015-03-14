@@ -7,9 +7,8 @@ import java.util.Scanner;
 public class Driver {
 
 	/**
-	 * Basic driver method that creates the required event to test output. TODO:
-	 * Still needs user input via the console through a Scanner or similar class
-	 * 
+	 * Basic driver method that creates the required event to test output.
+	 * Asks for user input. Once user is done, creates .ics file called 'test'
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -226,6 +225,18 @@ public class Driver {
 
 	}
 
+	/**
+	 * Helper method that checks if the time inputs are correct.
+	 * Does not check for specific day limits for each month.
+	 * Therefore a bug: Feb. 31 is a valid date, for example
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @param hour
+	 * @param minute
+	 * @param second
+	 * @return
+	 */
 	public static boolean checkTime(int year, int month, int day, int hour,
 			int minute, int second) {
 		if (year < 1900 || year > 2200) {
