@@ -22,9 +22,44 @@ public class Event {
 	private String location;
 	private String status;
 	private String summary;
+	private String uid;
 	private int sequence;
 	private int priority;
 	
+	/**
+	 * Default constructor that sets all dateTimes to their
+	 * default state if such defaults exist
+	 */
+	public Event(){
+		dateTimeS = null;
+		dateTimeE = null;
+		DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+		Date date = new Date();
+		timeStamp = df.format(date.getTime());
+		classType = "PUBLIC";
+		timeCreated = new String(timeStamp);
+		description = "";
+		lastModified = new String(timeStamp);
+		location = "";
+		status = "UNCONFIRMED";
+		summary = "";
+		sequence = 0;
+		priority = 0;
+		uid = Integer.toString(iCalendar.getEventSequence()) + "@Rambutan.team";
+		iCalendar.setEventSequence(iCalendar.getEventSequence() + 1);
+			
+	}
+	public String getUid() {
+		return uid;
+	}
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+	public void resetUID(){
+		uid = Integer.toString(iCalendar.getEventSequence()) + "@Rambutan.team";
+		iCalendar.setEventSequence(iCalendar.getEventSequence() + 1);
+		
+	}
 	/**
 	 * Constructor that creates an event based on the
 	 * paramaters passed in, as follows:

@@ -1,17 +1,148 @@
 package calendar;
 
-
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Driver {
 
 	/**
-	 * Basic driver method that creates the required event to test output.
-	 * Asks for user input. Once user is done, creates .ics file called 'test'
+	 * Main driver method that takes in its arguments a set of file names or
+	 * pathnames and puts all events in that file into one calendar. It then
+	 * tries to find the free time of all events that are on the same day as the
+	 * start date of the first event input into the calendar. and makes a new
+	 * calendar based on that free time. It writes the .ics file of the free
+	 * time events into "freeTime.ics"
+	 * 
 	 * @param args
+	 *            the list of .ics files to write.
 	 */
 	public static void main(String[] args) {
+		if (args.length < 1) {
+			System.err
+					.println("There are no file directories in the arguments.");
+			System.exit(1);
+		}
+		BufferedReader read;
+		Scanner scan;
+		iCalendar calendar = new iCalendar(); // the calendar all events will be
+												// compiled into
+		Event event = null; // forms the events to add to the calendar
+		String input = null; // each line of the file
+		String[] split = null; // splits the .ics file lines between ':'
+								// characters
+		boolean error = false; // flag if something went wrong
+		boolean finished = false; // flag for finding "END:VCALENDAR"
+		for (int i = 0; i < args.length; i++) {
+			if (input.endsWith(".ics")) {
+				try {
+					finished = false;
+					error = false;
+					read = new BufferedReader(new FileReader(new File(args[i])));
+					scan = new Scanner(read);
+					while (scan.hasNext() && !error && !finished) {
+						input = scan.nextLine();
+						split = input.split(":");
+						// The following if-else chain covers supported value
+						// types
+						// and adds them to a new event or calendar until an
+						// "END" statement
+						// is found. For events, it will put that event into the
+						// calendar.
+						// for END:VCALENDAR, it stops reading from that file.
+						if (split[0].equalsIgnoreCase("BEGIN")) {
+							if (split[1].equalsIgnoreCase("VEVENT")) {
+								event = new Event();
+							} else if (split[1].equalsIgnoreCase("VCALENDAR")) {
+
+							} else {
+								System.out.println("Element " + split[1]
+										+ " is not supported");
+							}
+						} else if (split[0].equalsIgnoreCase("VERSION")) {
+							if (!split[1].equalsIgnoreCase("2.0")) {
+								System.err.println("Version " + split[1]
+										+ " is not supported");
+								error = true;
+							}
+						} else if (split[0].equalsIgnoreCase("CALSCALE")) {
+							if (!split[1].equalsIgnoreCase("GREGORIAN")) {
+								System.err.println("Time format " + split[1]
+										+ " is not supported");
+								error = true;
+							}
+						} else if (split[0].equalsIgnoreCase("DTSTART")) {
+							event.setDateTimeS(split[1]);
+						} else if (split[0].equalsIgnoreCase("DTEND")) {
+							event.setDateTimeE(split[1]);
+						} else if (split[0].equalsIgnoreCase("CLASS")) {
+							event.setClassType(split[1]);
+						} else if (split[0].equalsIgnoreCase("CREATED")) {
+							event.setTimeCreated(split[1]);
+						} else if (split[0].equalsIgnoreCase("DESCRIPTION")) {
+							event.setDescription(split[1]);
+						} else if (split[0].equalsIgnoreCase("LAST-MODIFIED")) {
+							event.setLastModified(split[1]);
+						} else if (split[0].equalsIgnoreCase("LOCATION")) {
+							event.setLocation(split[1]);
+						} else if (split[0].equalsIgnoreCase("SEQIENCE")) {
+							event.setSequence(Integer.parseInt(split[1]));
+							event.resetUID();
+						} else if (split[0].equalsIgnoreCase("STATUS")) {
+							event.setStatus(split[1]);
+						} else if (split[0].equalsIgnoreCase("SUMMARY")) {
+							event.setSummary(split[1]);
+						} else if (split[0].equalsIgnoreCase("PRIORITY")) {
+							event.setPriority(Integer.parseInt(split[1]));
+						} else if (split[0].equalsIgnoreCase("END")) {
+							if (split[1].equalsIgnoreCase("VEVENT")) {
+								calendar.addEvent(event);
+								event = null;
+							} else if (split[1].equalsIgnoreCase("VCALENDAR")) {
+								finished = true;
+							}
+						}
+
+					}
+					if (error) {
+						System.out
+								.println("Did not create iCalendar due to errors listed.");
+					} else if (finished) {
+
+					} else {
+						System.err
+								.println("There was a problem with terminating the Calendar creation.");
+					}
+				} catch (FileNotFoundException e) {
+					System.err.println("Could not find file " + args[i]);
+				} catch (NullPointerException e) {
+					System.err
+							.println(".ics file's syntax is incorrect or corrupted");
+				}
+			} else {
+				System.err.println(input + " is not an .ics file");
+			}
+		}
+		String freeDay = calendar.getEvent(0).getDateTimeS().split("T")[0];
+		ArrayList<Event> freeTime = iCalendar.findFreeTime(
+				calendar.getEvents(), freeDay);
+		iCalendar freeTimeCalendar = new iCalendar(freeTime);
+		try {
+
+			BufferedWriter write = new BufferedWriter(new FileWriter(new File(
+					"freeTime.ics")));
+			write.write(freeTimeCalendar.createics());
+			write.close();
+		} catch (IOException e) {
+			System.err.println("Unable to write file");
+		}
+	}
+
+	/**
+	 * Asks the user for an event or events to enter into a calendar manually.
+	 * Was once used for testing in check-in 1.
+	 */
+	public static void manualEntry() {
 		Scanner scan = new Scanner(System.in);
 		boolean quit = false;
 		boolean valid = false;
@@ -29,11 +160,11 @@ public class Driver {
 		int minute;
 		int second;
 		int priority = 0;
-		
+
 		System.out.println("Name this calendar:");
 		input = scan.nextLine();
 		iCalendar cal = new iCalendar(input);
-		
+
 		while (!quit) {
 			quit = false;
 			System.out.println("Would you like to enter an event? Y/N");
@@ -69,39 +200,34 @@ public class Driver {
 							valid = false;
 						}
 						startDate = Integer.toString(year);
-						if(month < 10){
+						if (month < 10) {
 							input = "0" + Integer.toString(month);
-						}
-						else{
+						} else {
 							input = Integer.toString(month);
 						}
 						startDate += input;
-						if(day < 10){
+						if (day < 10) {
 							input = "0" + Integer.toString(day);
-						}
-						else{
+						} else {
 							input = Integer.toString(day);
 						}
 						startDate += input;
 						startDate += 'T';
-						if(hour < 10){
+						if (hour < 10) {
 							input = "0" + Integer.toString(hour);
-						}
-						else{
+						} else {
 							input = Integer.toString(hour);
 						}
 						startDate += input;
-						if(minute < 10){
+						if (minute < 10) {
 							input = "0" + Integer.toString(minute);
-						}
-						else{
+						} else {
 							input = Integer.toString(minute);
 						}
 						startDate += input;
-						if(second < 10){
+						if (second < 10) {
 							input = "0" + Integer.toString(second);
-						}
-						else{
+						} else {
 							input = Integer.toString(second);
 						}
 						startDate += input;
@@ -132,39 +258,34 @@ public class Driver {
 							valid = false;
 						}
 						endDate = Integer.toString(year);
-						if(month < 10){
+						if (month < 10) {
 							input = "0" + Integer.toString(month);
-						}
-						else{
+						} else {
 							input = Integer.toString(month);
 						}
 						endDate += input;
-						if(day < 10){
+						if (day < 10) {
 							input = "0" + Integer.toString(day);
-						}
-						else{
+						} else {
 							input = Integer.toString(day);
 						}
 						endDate += input;
 						endDate += 'T';
-						if(hour < 10){
+						if (hour < 10) {
 							input = "0" + Integer.toString(hour);
-						}
-						else{
+						} else {
 							input = Integer.toString(hour);
 						}
 						endDate += input;
-						if(minute < 10){
+						if (minute < 10) {
 							input = "0" + Integer.toString(minute);
-						}
-						else{
+						} else {
 							input = Integer.toString(minute);
 						}
 						endDate += input;
-						if(second < 10){
+						if (second < 10) {
 							input = "0" + Integer.toString(second);
-						}
-						else{
+						} else {
 							input = Integer.toString(second);
 						}
 						endDate += input;
@@ -190,25 +311,24 @@ public class Driver {
 
 				}
 				valid = false;
-				while(!valid){
-					System.out.println("1 as highest and 9 as lowest, what is the priority of this event?");
+				while (!valid) {
+					System.out
+							.println("1 as highest and 9 as lowest, what is the priority of this event?");
 					System.out.println("Enter 0 if there is no priority");
-					try{
+					try {
 						valid = true;
 						priority = scan.nextInt();
-						if(priority < 0 || priority > 9){
+						if (priority < 0 || priority > 9) {
 							valid = false;
 							System.out.println("Priority must be 0-9");
 						}
-					}
-					catch(Exception e){
+					} catch (Exception e) {
 						System.out.println("Invalid input");
 						valid = false;
 					}
 				}
-				Event e = new Event(description, title,
-						location, startDate, endDate,
-						classification, priority);
+				Event e = new Event(description, title, location, startDate,
+						endDate, classification, priority);
 				cal.addEvent(e);
 				scan.nextLine();
 
@@ -218,17 +338,19 @@ public class Driver {
 				quit = true;
 			}
 		}
-		
+
 		input = cal.createics();
 		System.out.println(input);
 		cal.writeics(input, "test.ics");
+		scan.close();
 
 	}
 
 	/**
-	 * Helper method that checks if the time inputs are correct.
-	 * Does not check for specific day limits for each month.
-	 * Therefore a bug: Feb. 31 is a valid date, for example
+	 * Helper method that checks if the time inputs are correct. Does not check
+	 * for specific day limits for each month. Therefore a bug: Feb. 31 is a
+	 * valid date, for example
+	 * 
 	 * @param year
 	 * @param month
 	 * @param day
