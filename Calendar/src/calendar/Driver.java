@@ -34,7 +34,7 @@ public class Driver {
 		boolean error = false; // flag if something went wrong
 		boolean finished = false; // flag for finding "END:VCALENDAR"
 		for (int i = 0; i < args.length; i++) {
-			if (input.endsWith(".ics")) {
+			if (args[i].endsWith(".ics")) {
 				try {
 					finished = false;
 					error = false;
@@ -72,21 +72,41 @@ public class Driver {
 								error = true;
 							}
 						} else if (split[0].equalsIgnoreCase("DTSTART")) {
-							event.setDateTimeS(split[1]);
+							if (checkTime(split[1])) {
+								event.setDateTimeS(split[1]);
+							} else {
+								error = true;
+							}
 						} else if (split[0].equalsIgnoreCase("DTEND")) {
-							event.setDateTimeE(split[1]);
+							if (checkTime(split[1])) {
+								event.setDateTimeE(split[1]);
+							} else {
+								error = true;
+							}
 						} else if (split[0].equalsIgnoreCase("CLASS")) {
 							event.setClassType(split[1]);
 						} else if (split[0].equalsIgnoreCase("CREATED")) {
-							event.setTimeCreated(split[1]);
+							if (checkTime(split[1])) {
+								event.setTimeCreated(split[1]);
+							} else {
+								error = true;
+							}
 						} else if (split[0].equalsIgnoreCase("DESCRIPTION")) {
 							event.setDescription(split[1]);
 						} else if (split[0].equalsIgnoreCase("LAST-MODIFIED")) {
-							event.setLastModified(split[1]);
+							if (checkTime(split[1])) {
+								event.setLastModified(split[1]);
+							} else {
+								error = true;
+							}
 						} else if (split[0].equalsIgnoreCase("LOCATION")) {
 							event.setLocation(split[1]);
 						} else if (split[0].equalsIgnoreCase("SEQIENCE")) {
-							event.setSequence(Integer.parseInt(split[1]));
+							try {
+								event.setSequence(Integer.parseInt(split[1]));
+							} catch (Exception e) {
+								error = true;
+							}
 							event.resetUID();
 						} else if (split[0].equalsIgnoreCase("STATUS")) {
 							event.setStatus(split[1]);
@@ -120,21 +140,25 @@ public class Driver {
 							.println(".ics file's syntax is incorrect or corrupted");
 				}
 			} else {
-				System.err.println(input + " is not an .ics file");
+				System.err.println(args[i] + " is not an .ics file");
 			}
 		}
-		String freeDay = calendar.getEvent(0).getDateTimeS().split("T")[0];
-		ArrayList<Event> freeTime = iCalendar.findFreeTime(
-				calendar.getEvents(), freeDay);
-		iCalendar freeTimeCalendar = new iCalendar(freeTime);
-		try {
+		if (calendar != null && calendar.getEvents().size() >= 1) {
+			String freeDay = calendar.getEvent(0).getDateTimeS().split("T")[0];
 
-			BufferedWriter write = new BufferedWriter(new FileWriter(new File(
-					"freeTime.ics")));
-			write.write(freeTimeCalendar.createics());
-			write.close();
-		} catch (IOException e) {
-			System.err.println("Unable to write file");
+			ArrayList<Event> freeTime = iCalendar.findFreeTime(
+					calendar.getEvents(), freeDay); 
+			iCalendar freeTimeCalendar = new iCalendar(freeTime);
+			System.out.println(freeTimeCalendar.createics());
+			try {
+
+				BufferedWriter write = new BufferedWriter(new FileWriter(
+						new File("freeTime.ics")));
+				write.write(freeTimeCalendar.createics());
+				write.close();
+			} catch (IOException e) {
+				System.err.println("Unable to write file");
+			}
 		}
 	}
 
@@ -381,4 +405,25 @@ public class Driver {
 		}
 		return true;
 	}
+
+	public static boolean checkTime(String date) {
+		int year = 0;
+		int month = 0;
+		int day = 0;
+		int hour = 0;
+		int minute = 0;
+		int second = 0;
+		try {
+			year = Integer.parseInt(date.substring(0, 4));
+			month = Integer.parseInt(date.substring(4, 6));
+			day = Integer.parseInt(date.substring(6, 8));
+			hour = Integer.parseInt(date.substring(9, 11));
+			minute = Integer.parseInt(date.substring(11, 13));
+			second = Integer.parseInt(date.substring(13, 15));
+		} catch (Exception e) {
+			return false;
+		}
+		return checkTime(year, month, day, hour, minute, second);
+	}
+
 }
