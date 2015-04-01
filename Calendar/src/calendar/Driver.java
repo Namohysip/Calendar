@@ -7,24 +7,36 @@ import java.util.Scanner;
 public class Driver {
 
 	/**
-	 * Main driver method that takes in its arguments a set of file names or
-	 * pathnames and puts all events in that file into one calendar. It then
-	 * tries to find the free time of all events that are on the same day as the
-	 * start date of the first event input into the calendar. and makes a new
-	 * calendar based on that free time. It writes the .ics file of the free
-	 * time events into "freeTime.ics"
+	 * Main method that calls byFile
 	 * 
 	 * @param args
-	 *            the list of .ics files to write.
 	 */
 	public static void main(String[] args) {
-		if (args.length < 1) {
+		iCalendar calendar = byFile(args);
+		iCalendar freeTime = findFreeTime(calendar);
+		freeTime.writeics("freeTime.ics");
+	}
+
+	/**
+	 * Method that takes in its arguments a set of file names or pathnames and
+	 * puts all events in that file into one calendar. It then tries to find the
+	 * free time of all events that are on the same day as the start date of the
+	 * first event input into the calendar. and makes a new calendar based on
+	 * that free time. It writes the .ics file of the free time events into
+	 * "freeTime.ics"
+	 * 
+	 * @param files
+	 *            the list of .ics files to write.
+	 */
+	public static iCalendar byFile(String[] files) {
+		if (files.length < 1) {
 			System.err
 					.println("There are no file directories in the arguments.");
 			System.exit(1);
 		}
 		BufferedReader read;
-		Scanner scan;
+		Scanner scan = new Scanner(System.in); // dummy scanner so it can be
+												// closed if never initialized
 		iCalendar calendar = new iCalendar(); // the calendar all events will be
 												// compiled into
 		Event event = null; // forms the events to add to the calendar
@@ -33,12 +45,13 @@ public class Driver {
 								// characters
 		boolean error = false; // flag if something went wrong
 		boolean finished = false; // flag for finding "END:VCALENDAR"
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].endsWith(".ics")) {
+		for (int i = 0; i < files.length; i++) {
+			if (files[i].endsWith(".ics")) {
 				try {
 					finished = false;
 					error = false;
-					read = new BufferedReader(new FileReader(new File(args[i])));
+					read = new BufferedReader(
+							new FileReader(new File(files[i])));
 					scan = new Scanner(read);
 					while (scan.hasNext() && !error && !finished) {
 						input = scan.nextLine();
@@ -134,32 +147,36 @@ public class Driver {
 								.println("There was a problem with terminating the Calendar creation.");
 					}
 				} catch (FileNotFoundException e) {
-					System.err.println("Could not find file " + args[i]);
+					System.err.println("Could not find file " + files[i]);
 				} catch (NullPointerException e) {
 					System.err
 							.println(".ics file's syntax is incorrect or corrupted");
 				}
 			} else {
-				System.err.println(args[i] + " is not an .ics file");
+				System.err.println(files[i] + " is not an .ics file");
 			}
 		}
+		scan.close();
+		return calendar;
+	}
+
+	/**
+	 * Given the calendar passed in, finds free time between events that land on
+	 * the day of the first event on the calendar
+	 * 
+	 * @param calendar
+	 * @return
+	 */
+	public static iCalendar findFreeTime(iCalendar calendar) {
 		if (calendar != null && calendar.getEvents().size() >= 1) {
 			String freeDay = calendar.getEvent(0).getDateTimeS().split("T")[0];
 
 			ArrayList<Event> freeTime = iCalendar.findFreeTime(
-					calendar.getEvents(), freeDay); 
+					calendar.getEvents(), freeDay);
 			iCalendar freeTimeCalendar = new iCalendar(freeTime);
-			System.out.println(freeTimeCalendar.createics());
-			try {
-
-				BufferedWriter write = new BufferedWriter(new FileWriter(
-						new File("freeTime.ics")));
-				write.write(freeTimeCalendar.createics());
-				write.close();
-			} catch (IOException e) {
-				System.err.println("Unable to write file");
-			}
+			return freeTimeCalendar;
 		}
+		return null;
 	}
 
 	/**
@@ -365,7 +382,7 @@ public class Driver {
 
 		input = cal.createics();
 		System.out.println(input);
-		cal.writeics(input, "test.ics");
+		cal.writeics("test.ics");
 		scan.close();
 
 	}
@@ -406,6 +423,15 @@ public class Driver {
 		return true;
 	}
 
+	/**
+	 * Helper method that checks the time based on the string that is passed in.
+	 * Splits the date into integers and calls the other checkTime method with
+	 * those integers
+	 * 
+	 * @param date
+	 *            the date, in the format yyyyMMddThhmmss
+	 * @return
+	 */
 	public static boolean checkTime(String date) {
 		int year = 0;
 		int month = 0;
