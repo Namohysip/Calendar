@@ -95,11 +95,11 @@ public class iCalendar {
 	}
 	
 	/**
-	 * Writes a file based on the filename given and the .ics content.
-	 * @param calendar
+	 * Writes a file based on the filename for the calendar.
 	 * @param filename
 	 */
-	public void writeics(String calendar, String filename){
+	public void writeics(String filename){
+		createics();
 		BufferedWriter write;
 		try{
 			write = new BufferedWriter(new FileWriter(new File(filename)));
