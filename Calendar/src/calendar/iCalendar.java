@@ -1,8 +1,3 @@
-/**
- * 
- */
-package calendar;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -127,15 +122,39 @@ public class iCalendar {
 		//for alternate implementations. Currently, the 'day' should be in the format
 		//YYYYMMDD ie, the part of the DateTime variable before the T.
 		
-		for(Event e: busyTimes){
-			String start = e.getDateTimeS().split("T")[0]; //gets the start day, ie the left side of the T
-			String end = e.getDateTimeE().split("T")[0]; //gets the end day, ie the left side of the T
-			if(start.equalsIgnoreCase(end)){ //the event must start and end on the same day
-				if(start.equalsIgnoreCase(day)){ //the event must be on the day specified
-					//an event that gets this far is a valid day to use to find free time.
-				}
+		int eCount = busyTimes.size();
+		
+		for(int i = 0; (i + 1) < eCount; i++)
+		{
+
+			Event event1 = busyTimes.get(i);
+			Event event2 = busyTimes.get(i + 1);
+			
+			String endEvent1 = event1.getDateTimeE().split("T")[0];
+			String endEventString = event1.getDateTimeE();
+			String startEvent2 = event2.getDateTimeS().split("T")[0];
+			String startEventString = event2.getDateTimeS();
+			
+			int end = Integer.parseInt(endEvent1);
+			int start = Integer.parseInt(startEvent2);
+			
+			int result = end - start;
+			
+			if(result > 0)
+			{
+				
+				Event freeTimeEvent = new Event("free time","free time","Anywhere",endEventString,startEventString,"PUBLIC",0);
+				freeTime.add(freeTimeEvent);
+				
 			}
+			
+			
+			
 		}
+		
+		
+		
+		
 		return freeTime;
 	}
 	
