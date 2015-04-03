@@ -105,7 +105,9 @@ public class Driver {
 								error = true;
 							}
 						} else if (split[0].equalsIgnoreCase("DESCRIPTION")) {
-							event.setDescription(split[1]);
+							if(split.length > 1){
+								event.setDescription(split[1]);
+							}
 						} else if (split[0].equalsIgnoreCase("LAST-MODIFIED")) {
 							if (checkTime(split[1])) {
 								event.setLastModified(split[1]);
@@ -113,7 +115,9 @@ public class Driver {
 								error = true;
 							}
 						} else if (split[0].equalsIgnoreCase("LOCATION")) {
-							event.setLocation(split[1]);
+							if(split.length > 1){
+								event.setLocation(split[1]);
+							}
 						} else if (split[0].equalsIgnoreCase("SEQIENCE")) {
 							try {
 								event.setSequence(Integer.parseInt(split[1]));
@@ -169,13 +173,15 @@ public class Driver {
 	 */
 	public static iCalendar findFreeTime(iCalendar calendar) {
 		if (calendar != null && calendar.getEvents().size() >= 1) {
-			String freeDay = calendar.getEvent(0).getDateTimeS().split("T")[0];
-
+			Scanner scan = new Scanner(System.in);
+			System.out.println("Enter day to find free time: YYYYMMDD");
+			String freeDay = scan.nextLine();
 			ArrayList<Event> freeTime = iCalendar.findFreeTime(
 					calendar.getEvents(), freeDay);
 			iCalendar freeTimeCalendar = new iCalendar(freeTime);
 			return freeTimeCalendar;
 		}
+		
 		return null;
 	}
 
