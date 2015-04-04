@@ -113,16 +113,30 @@ public class iCalendar {
 			System.err.println("Error writing file");
 		}
 	}
-
+	/**
+	 * Sets event sequence
+	 * @param s
+	 */
 	public static void setEventSequence(int s) {
 		eventSequence = s;
 	}
-
+	/**
+	 * Returns an integer that increments up as events are added.
+	 * Never goes down.
+	 * @return
+	 */
 	public static int getEventSequence() {
 		return eventSequence;
 	}
 //possible alternative to find free time if it isn't sorted?
-	/*
+	/**
+	 * Finds free time for the day given.
+	 * Free time is defined as time when there are not
+	 * any events during that time
+	 * @param busyTimes
+	 * @param day
+	 * @return an array list containing each moment of free time
+	 */
 	public static ArrayList<Event> findFreeTime(ArrayList<Event> busyTimes,
 			String day) {
 		ArrayList<Event> freeTime = new ArrayList<Event>();
@@ -136,8 +150,8 @@ public class iCalendar {
 			if (b.getDateTimeS().split("T")[0].equals(day)
 					&& b.getDateTimeE().split("T")[0].equals(day)) {
 				// the event is on the specified day to find free time
-				busyStart = Integer.parseInt(b.getDateTimeS().split("T")[1]);
-				busyEnd = Integer.parseInt(b.getDateTimeE().split("T")[1]);
+				busyStart = Integer.parseInt(b.getDateTimeS().split("Z")[0].split("T")[1]);
+				busyEnd = Integer.parseInt(b.getDateTimeE().split("Z")[0].split("T")[1]);
 				for (int i = 0; i < freeTime.size(); i++) {
 					freeStart = Integer.parseInt(freeTime.get(i).getDateTimeS()
 							.split("T")[1]);
@@ -151,8 +165,12 @@ public class iCalendar {
 								freeTime.remove(i);
 								i--;
 							} else {// free time ends after event ends
-								String newTime = day + "T"
-										+ Integer.toString(busyEnd);
+								
+								String newTime = Integer.toString(busyEnd);
+								while(newTime.length() < 6){
+									newTime = "0" + newTime;
+								}
+								newTime = day + "T" + newTime;
 								freeTime.get(i).setDateTimeS(newTime);
 								// free time now starts when that event ends
 							}
@@ -164,21 +182,35 @@ public class iCalendar {
 							// free time ends after an event started
 							if (freeEnd <= busyEnd) {
 								// free time ended at or before that event ended
-								String newTime = day + "T"
-										+ Integer.toString(busyStart);
-								freeTime.get(i).setDateTimeE(newTime);
+								String newTime = Integer.toString(busyStart);
+								while(newTime.length() < 6){
+									newTime = "0" + newTime;
+								}
+								newTime = day + "T" + newTime;
 								// free time now ends when that event starts
 							} else {// the busy time is completely during free
 									// time
-								String newTime = day + "T"
-										+ Integer.toString(busyStart);
+								String newTime = Integer.toString(busyStart);
+								while(newTime.length() < 6){
+									newTime = "0" + newTime;
+								}
+								newTime = day + "T" + newTime;
 								// free time ends when busy time starts
 								freeTime.get(i).setDateTimeE(newTime);
 								// free time starts when busy time ends
+								String newTime2 = Integer.toString(busyEnd);
+								while(newTime2.length() < 6){
+									newTime2 = "0" + newTime2;
+								}
+								newTime2 = day + "T" + newTime2;
+								String newTime3 = Integer.toString(freeEnd);
+								while(newTime3.length() < 6){
+									newTime3 = "0" + newTime3;
+								}
+								newTime3 = day + "T" + newTime3;
 								freeTime.add(i + 1, new Event("free time",
-										"free time", "Anywhere", day + "T"
-												+ Integer.toString(busyEnd),
-										day + "T" + Integer.toString(freeEnd),
+										"free time", "Anywhere", newTime2,
+										newTime3,
 										"PUBLIC", 0));
 							}
 						}
@@ -190,8 +222,8 @@ public class iCalendar {
 		}
 		return freeTime;
 	}
-*/
 
+/*
 	public static ArrayList<Event> findFreeTime(ArrayList<Event> busyTimes,
 			String day) {
 		ArrayList<Event> freeTime = new ArrayList<Event>();
@@ -222,11 +254,21 @@ public class iCalendar {
 		}
 		return freeTime;
 	}
-
+*/
+	/**
+	 * Returns an array list of all events on the calendar
+	 * @return
+	 */
 	public ArrayList<Event> getEvents() {
 		return allEvents;
 	}
-
+	
+	/**
+	 * Gets a specific event from the calendar by index of
+	 * the array list
+	 * @param index
+	 * @return
+	 */
 	public Event getEvent(int index) {
 		if (index >= allEvents.size()) {
 			return null;
