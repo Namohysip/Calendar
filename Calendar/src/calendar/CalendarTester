@@ -1,19 +1,73 @@
 package calendar;
 
 import static org.junit.Assert.*;
-
+import java.util.ArrayList;
 import org.junit.Test;
 
-public class CalendarTester {
 
+public class CalendarTester {
+	/*
+	  *Testing NO PARAMETER constructor of Event()
+	*/
 	@Test
-	public void test() {
-		//your test here
+	public void eventConstructorTest() {
+		Event e = new Event();
+		
+		assertTrue(e.getDateTimeS() == null);
+		assertTrue(e.getDateTimeE() == null);
+		assertTrue(e.getClassType().equals("PUBLIC"));
+		assertTrue(e.getDescription().equals(""));
+		assertTrue(e.getLocation().equals(""));
+		assertTrue(e.getStatus().equals("UNCONFIRMED"));
+		assertTrue(e.getSummary().equals(""));
+		assertTrue(e.getSequence()==0);
+		assertTrue(e.getPriority()==0);
+		System.out.println(e.getUid());
+		assertTrue(e.getUid().endsWith("@Rambutan.team"));
 	}
 	
+	/*
+	  *Testing WITH PARAMETERS constructor of Event()
+	*/
 	@Test
-	public void test2(){
-		//your next test here
+	public void eventConstructorTest2(){
+		Event e = new Event("TestDescription", "TestSummary", "TestLocation", 		"TestTimeStart", "TestTimeEnd", "TestClassT", 1);
+		
+		assertTrue(e.getDateTimeS().equals("TestTimeStart"));
+		assertTrue(e.getDateTimeE().equals("TestTimeEnd"));
+		assertTrue(e.getClassType().equals("TestClassT"));
+		assertTrue(e.getDescription().equals("TestDescription"));
+		assertTrue(e.getLocation().equals("TestLocation"));
+		assertTrue(e.getStatus().equals("CONFIRMED"));
+		assertTrue(e.getSummary().equals("TestSummary"));
+		assertTrue(e.getSequence()==0);
+		assertTrue(e.getPriority()==1);
+		assertTrue(e.getUid().endsWith("@Rambutan.team"));  /*since eventSequence was not initialized then it is concatinating nothing to "@Rambutan.team" but i could be wrong*/
+		assertTrue(iCalendar.getEventSequence()==1);
+		
 	}
-
+	/**
+	 * This test checks to make sure that adding an
+	 * event to iCalendar correctly adds it in to
+	 * the iCalendar event list.
+	 */
+	@Test
+	public void AddingEventToCalendarTest(){
+		iCalendar cal = new iCalendar();
+		Event e = new Event();
+		assertEquals(cal.getEvents().size(), 0);
+		cal.addEvent(e);
+		assertEquals(cal.getEvents().size(), 1);
+	}
+	/**
+	 * This test checks to make sure if there is anything in 
+	 * the freeTime arraylist in iCalendar.
+	 */
+	@Test
+	public void FreeTimeTest(){
+		iCalendar cal = new iCalendar();
+		ArrayList<Event> arrayEvents = new ArrayList<Event>(); 
+		assertEquals(cal.findFreeTime(arrayEvents, "Friday").size(), 1);
+	}
 }
+
