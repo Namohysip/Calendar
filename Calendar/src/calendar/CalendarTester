@@ -70,5 +70,126 @@ public class CalendarTester {
 		ArrayList<Event> arrayEvents = new ArrayList<Event>(); 
 		assertEquals(cal.findFreeTime(arrayEvents, "Friday").size(), 1);
 	}
-}
+		/**
+	 * This test checks that checkTime(String) properly returns false for a
+	 * completely invalid entry for a date.
+	 */
+	@Test
+	public void dateTestS1() {
+		assertFalse(Driver.checkTime("abcde"));
+	}
 
+	/**
+	 * This test checks that checkTime(String) properly returns false for an
+	 * entry that is an integer, but not in the right syntax
+	 */
+	@Test
+	public void dateTestS2() {
+		assertFalse(Driver.checkTime("111111111111111"));
+	}
+
+	/**
+	 * This test checks that checkTime(String) properly returns false for an
+	 * entry that does not have a valid date.
+	 */
+	@Test
+	public void dateTestS3() {
+		assertFalse(Driver.checkTime("18009900T005555"));
+	}
+
+	/**
+	 * This test checks that checkTime(String) returns true for a valid date.
+	 */
+	@Test
+	public void dateTestS4() {
+		assertTrue(Driver.checkTime("20120503T053000"));
+	}
+
+	/**
+	 * Test for an invalid entry in all forms
+	 */
+	@Test
+	public void dateTestI1() {
+		assertFalse(Driver.checkTime(0, 0, 0, 0, 0, 0));
+	}
+
+	/**
+	 * Test for invalid month
+	 */
+	@Test
+	public void dateTestI2() {
+		assertFalse(Driver.checkTime(2012, 13, 1, 0, 0, 0));
+	}
+
+	/**
+	 * Test for invalid day
+	 */
+	@Test
+	public void dateTestI3() {
+		assertFalse(Driver.checkTime(2012, 3, 32, 0, 0, 0));
+	}
+
+	/**
+	 * Test for invalid hour
+	 */
+	@Test
+	public void dateTestI4() {
+		assertFalse(Driver.checkTime(2012, 3, 12, 24, 0, 0));
+	}
+
+	/**
+	 * Test for invalid minute
+	 */
+	@Test
+	public void dateTestI5() {
+		assertFalse(Driver.checkTime(2012, 3, 12, 12, 60, 0));
+	}
+
+	/**
+	 * Test for invalid second
+	 */
+	@Test
+	public void dateTestI6() {
+		assertFalse(Driver.checkTime(2012, 3, 12, 12, 59, 60));
+	}
+
+	/**
+	 * Test for a valid date; this one should be true
+	 */
+	@Test
+	public void dateTestI7() {
+		assertTrue(Driver.checkTime(2012, 3, 12, 12, 59, 0));
+	}
+
+	/**
+	 * Test to make sure Feb 29 is only valid on leap years
+	 */
+	@Test
+	public void dateTestI8() {
+		assertFalse(Driver.checkTime(2013, 2, 29, 0, 0, 0));
+	}
+
+	/**
+	 * Test to make sure Feb 29 is valid on a leap year, 2012
+	 */
+	@Test
+	public void dateTestI9() {
+		assertTrue(Driver.checkTime(2012, 2, 29, 0, 0, 0));
+	}
+
+	/**
+	 * Test to make sure day 30 doesn't work on Feb
+	 */
+	@Test
+	public void dateTestI10() {
+		assertFalse(Driver.checkTime(2012, 2, 30, 0, 0, 0));
+	}
+
+	/**
+	 * Test to make sure day 31 doesn't work on Nov
+	 */
+	@Test
+	public void dateTestI11() {
+		assertFalse(Driver.checkTime(2013, 11, 31, 0, 0, 0));
+	}
+}
