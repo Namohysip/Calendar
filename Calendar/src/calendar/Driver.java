@@ -105,7 +105,7 @@ public class Driver {
 								error = true;
 							}
 						} else if (split[0].equalsIgnoreCase("DESCRIPTION")) {
-							if(split.length > 1){
+							if (split.length > 1) {
 								event.setDescription(split[1]);
 							}
 						} else if (split[0].equalsIgnoreCase("LAST-MODIFIED")) {
@@ -115,7 +115,7 @@ public class Driver {
 								error = true;
 							}
 						} else if (split[0].equalsIgnoreCase("LOCATION")) {
-							if(split.length > 1){
+							if (split.length > 1) {
 								event.setLocation(split[1]);
 							}
 						} else if (split[0].equalsIgnoreCase("SEQIENCE")) {
@@ -179,9 +179,10 @@ public class Driver {
 			ArrayList<Event> freeTime = iCalendar.findFreeTime(
 					calendar.getEvents(), freeDay);
 			iCalendar freeTimeCalendar = new iCalendar(freeTime);
+			scan.close();
 			return freeTimeCalendar;
 		}
-		
+
 		return null;
 	}
 
@@ -411,13 +412,37 @@ public class Driver {
 		if (year < 1900 || year > 2200) {
 			return false;
 		}
-		if (month > 12 || month < 0) {
+		if (month > 12 || month < 1) {
 			return false;
 		}
-		if (day < 0 || day > 31) {
-			return false;
+		/*
+		 * Checks for each month's valid days, including leap years
+		 */
+		switch (month) {
+		case (2):
+			if (year % 4 == 0) {
+				if (day < 1 || day > 29) {
+					return false;
+				}
+			} else if (day < 1 || day > 28) {
+				return false;
+			}
+			break;
+		case (4):
+		case (6):
+		case (9):
+		case (11):
+			if (day < 1 || day > 30) {
+				return false;
+			}
+			break;
+		default:
+			if (day < 1 || day > 31) {
+				return false;
+			}
 		}
-		if (hour < 0 || hour > 24) {
+
+		if (hour < 0 || hour > 23) {
 			return false;
 		}
 		if (minute < 0 || minute > 59) {
