@@ -192,4 +192,37 @@ public class CalendarTester {
 	public void dateTestI11() {
 		assertFalse(Driver.checkTime(2013, 11, 31, 0, 0, 0));
 	}
+	
+	
+	/**
+	 * byFile should return null if a file is empty
+	 */
+	@Test
+	public void byFileTestEmpty(){
+		assertTrue(Driver.byFile(new String[]{"SourceTestFiles/testNull.ics"}) == null);
+	}
+	
+	/**
+	 * byFile should return null if the syntax for the calendar
+	 * itself is incorrect.
+	 */
+	@Test
+	public void byFileTestBadFormat(){
+		assertTrue(Driver.byFile(new String[]{"SourceTestFiles/testBad.ics"})==null);
+	}
+	
+	@Test
+	public void byFileTestGoodFormat(){
+		iCalendar cal = Driver.byFile(new String[]{"SourceTestFiles/test.ics"});
+		assertTrue(cal.getEvents().size() == 3);
+		Event e = cal.getEvent(0);
+		assertTrue(e.getSummary().equals("Morning Routine"));
+		assertTrue(e.getDateTimeE().equals("20150404T100000"));
+		assertTrue(e.getDateTimeS().equals("20150404T050000"));
+		assertTrue(e.getClassType().equals("PUBLIC"));
+		assertTrue(e.getDescription().equals(""));
+		assertTrue(e.getLocation().equals("Anywhere"));
+		assertTrue(e.getPriority() == 0);
+		assertTrue(e.getSummary().equals("Morning Routine"));
+	}
 }
