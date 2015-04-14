@@ -5,16 +5,56 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Driver {
-
+	private static Scanner scan = new Scanner(System.in);
+	
 	/**
-	 * Main method that calls byFile
+	 * Main method that asks the user for file pathways.
+	 * Then it calls byFile with those file paths.
+	 * Then it finds free time between all of those events.
+	 * It then writes the free time to freeTime.ics
 	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		iCalendar calendar = byFile(args);
-		iCalendar freeTime = findFreeTime(calendar);
-		freeTime.writeics("freeTime.ics");
+		String[] files = askForFiles();
+		iCalendar calendar = byFile((files));
+		if (calendar != null) {
+			iCalendar freeTime = findFreeTime(calendar);
+			if (freeTime != null) {
+				freeTime.writeics("freeTime.ics");
+				System.out.println(freeTime.createics());
+			}
+		}
+
+	}
+
+	public static String[] askForFiles() {
+		boolean keepGoing = true;
+		ArrayList<String> files = new ArrayList<String>();
+		while (keepGoing) {
+			System.out.println("Enter person's calendar file");
+			String file = scan.nextLine();
+			if (file.endsWith(".ics")) {
+				files.add(file);
+			} else {
+				System.out.println("This is not a .ics file");
+			}
+			boolean valid = false;
+			while (!valid) {
+				System.out.println("Enter another file? Y/N");
+				String input = scan.nextLine();
+				if (input.equals("Y")) {
+					valid = true;
+				} else if (input.equals("N")) {
+					valid = true;
+					keepGoing = false;
+				} else {
+					System.out.println("Only enter Y or N");
+				}
+			}
+		}
+
+		return files.toArray(new String[1]);
 	}
 
 	/**
@@ -32,13 +72,13 @@ public class Driver {
 		if (files.length < 1) {
 			System.err
 					.println("There are no file directories in the arguments.");
-			System.exit(1);
+			return null;
 		}
+		Scanner fileScan = null;
 		BufferedReader read;
-		Scanner scan = new Scanner(System.in); // dummy scanner so it can be
-												// closed if never initialized
-		iCalendar calendar = new iCalendar(); // the calendar all events will be
-												// compiled into
+								// closed if never initialized
+		iCalendar calendar = null; // the calendar all events will be
+									// compiled into
 		Event event = null; // forms the events to add to the calendar
 		String input = null; // each line of the file
 		String[] split = null; // splits the .ics file lines between ':'
@@ -52,9 +92,9 @@ public class Driver {
 					error = false;
 					read = new BufferedReader(
 							new FileReader(new File(files[i])));
-					scan = new Scanner(read);
-					while (scan.hasNext() && !error && !finished) {
-						input = scan.nextLine();
+					fileScan = new Scanner(read);
+					while (fileScan.hasNext() && !error && !finished) {
+						input = fileScan.nextLine();
 						split = input.split(":");
 						// The following if-else chain covers supported value
 						// types
@@ -65,9 +105,16 @@ public class Driver {
 						// for END:VCALENDAR, it stops reading from that file.
 						if (split[0].equalsIgnoreCase("BEGIN")) {
 							if (split[1].equalsIgnoreCase("VEVENT")) {
-								event = new Event();
+								if(event == null){
+									event = new Event();
+								}
+								else{
+									error = true;
+								}
 							} else if (split[1].equalsIgnoreCase("VCALENDAR")) {
-
+								if (calendar == null) {
+									calendar = new iCalendar();
+								}
 							} else {
 								System.out.println("Element " + split[1]
 										+ " is not supported");
@@ -133,7 +180,12 @@ public class Driver {
 							event.setPriority(Integer.parseInt(split[1]));
 						} else if (split[0].equalsIgnoreCase("END")) {
 							if (split[1].equalsIgnoreCase("VEVENT")) {
-								calendar.addEvent(event);
+								if(calendar != null){
+									calendar.addEvent(event);
+								}
+								else{
+									error = true;
+								}
 								event = null;
 							} else if (split[1].equalsIgnoreCase("VCALENDAR")) {
 								finished = true;
@@ -156,11 +208,13 @@ public class Driver {
 					System.err
 							.println(".ics file's syntax is incorrect or corrupted");
 				}
+				finally{
+					fileScan.close();
+				}
 			} else {
 				System.err.println(files[i] + " is not an .ics file");
 			}
 		}
-		scan.close();
 		return calendar;
 	}
 
@@ -173,13 +227,12 @@ public class Driver {
 	 */
 	public static iCalendar findFreeTime(iCalendar calendar) {
 		if (calendar != null && calendar.getEvents().size() >= 1) {
-			Scanner scan = new Scanner(System.in);
 			System.out.println("Enter day to find free time: YYYYMMDD");
+			Scanner scan = new Scanner(System.in);
 			String freeDay = scan.nextLine();
 			ArrayList<Event> freeTime = iCalendar.findFreeTime(
 					calendar.getEvents(), freeDay);
 			iCalendar freeTimeCalendar = new iCalendar(freeTime);
-			scan.close();
 			return freeTimeCalendar;
 		}
 
@@ -191,7 +244,6 @@ public class Driver {
 	 * Was once used for testing in check-in 1.
 	 */
 	public static void manualEntry() {
-		Scanner scan = new Scanner(System.in);
 		boolean quit = false;
 		boolean valid = false;
 		String input = "";
@@ -390,7 +442,6 @@ public class Driver {
 		input = cal.createics();
 		System.out.println(input);
 		cal.writeics("test.ics");
-		scan.close();
 
 	}
 
