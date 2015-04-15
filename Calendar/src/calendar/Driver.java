@@ -6,28 +6,73 @@ import java.util.Scanner;
 
 public class Driver {
 	private static Scanner scan = new Scanner(System.in);
-	
+
 	/**
-	 * Main method that asks the user for file pathways.
-	 * Then it calls byFile with those file paths.
-	 * Then it finds free time between all of those events.
-	 * It then writes the free time to freeTime.ics
+	 * Main method that asks the user for file pathways. Then it calls byFile
+	 * with those file paths. Then it finds free time between all of those
+	 * events. It then writes the free time to freeTime.ics
 	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		String[] files = askForFiles();
 		iCalendar calendar = byFile((files));
+		int priority = 0;
 		if (calendar != null) {
+			boolean valid = false;
+			while (!valid) {
+				System.out
+						.println("Enter highest priority level to not ignore");
+				System.out
+						.println("Priorities lower than the given number will not");
+				System.out.println("be considered when finding free time");
+				System.out
+						.println("A lower number = higher priority, from 1-9.");
+				try {
+					priority = scan.nextInt();
+					if (priority < 1) {
+						valid = false;
+					} else {
+						valid = true;
+					}
+				} catch (Exception e) {
+					valid = false;
+				} finally {
+					scan.nextLine();
+				}
+			}
+			removeLowPriority(calendar, priority);
 			iCalendar freeTime = findFreeTime(calendar);
 			if (freeTime != null) {
 				freeTime.writeics("freeTime.ics");
 				System.out.println(freeTime.createics());
 			}
 		}
-
 	}
 
+	/**
+	 * This method removes all events in the calendar whose events are lower
+	 * than the given priority.
+	 * 
+	 * @param cal
+	 * @param minPriority
+	 */
+	public static void removeLowPriority(iCalendar cal, int minPriority) {
+		for (int i = 0; i < cal.getEvents().size(); i++) {
+			if (cal.getEvents().get(i).getPriority() >= minPriority) {
+				cal.getEvents().remove(i);
+				i--;
+			}
+		}
+	}
+
+	/**
+	 * This method asks the user to input file pathnames via the console to .ics
+	 * files and stores those paths into an array of Strings, and returns that
+	 * array.
+	 * 
+	 * @return The array of Strings entered by the user.
+	 */
 	public static String[] askForFiles() {
 		boolean keepGoing = true;
 		ArrayList<String> files = new ArrayList<String>();
@@ -76,7 +121,7 @@ public class Driver {
 		}
 		Scanner fileScan = null;
 		BufferedReader read;
-								// closed if never initialized
+		// closed if never initialized
 		iCalendar calendar = null; // the calendar all events will be
 									// compiled into
 		Event event = null; // forms the events to add to the calendar
@@ -105,10 +150,9 @@ public class Driver {
 						// for END:VCALENDAR, it stops reading from that file.
 						if (split[0].equalsIgnoreCase("BEGIN")) {
 							if (split[1].equalsIgnoreCase("VEVENT")) {
-								if(event == null){
+								if (event == null) {
 									event = new Event();
-								}
-								else{
+								} else {
 									error = true;
 								}
 							} else if (split[1].equalsIgnoreCase("VCALENDAR")) {
@@ -180,10 +224,9 @@ public class Driver {
 							event.setPriority(Integer.parseInt(split[1]));
 						} else if (split[0].equalsIgnoreCase("END")) {
 							if (split[1].equalsIgnoreCase("VEVENT")) {
-								if(calendar != null){
+								if (calendar != null) {
 									calendar.addEvent(event);
-								}
-								else{
+								} else {
 									error = true;
 								}
 								event = null;
@@ -207,9 +250,10 @@ public class Driver {
 				} catch (NullPointerException e) {
 					System.err
 							.println(".ics file's syntax is incorrect or corrupted");
-				}
-				finally{
-					fileScan.close();
+				} finally {
+					if (fileScan != null) {
+						fileScan.close();
+					}
 				}
 			} else {
 				System.err.println(files[i] + " is not an .ics file");
@@ -226,7 +270,7 @@ public class Driver {
 	 * @return
 	 */
 	public static iCalendar findFreeTime(iCalendar calendar) {
-		if (calendar != null && calendar.getEvents().size() >= 1) {
+		if (calendar != null) {
 			System.out.println("Enter day to find free time: YYYYMMDD");
 			Scanner scan = new Scanner(System.in);
 			String freeDay = scan.nextLine();
