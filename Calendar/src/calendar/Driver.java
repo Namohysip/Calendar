@@ -44,6 +44,9 @@ public class Driver {
 			removeLowPriority(calendar, priority);
 			iCalendar freeTime = findFreeTime(calendar);
 			if (freeTime != null) {
+				for(Event e: freeTime.getEvents()){
+					e.setSummary("POSSIBLE MEETING TIME");
+				}
 				freeTime.writeics("freeTime.ics");
 				System.out.println(freeTime.createics());
 			}
@@ -59,7 +62,7 @@ public class Driver {
 	 */
 	public static void removeLowPriority(iCalendar cal, int minPriority) {
 		for (int i = 0; i < cal.getEvents().size(); i++) {
-			if (cal.getEvents().get(i).getPriority() >= minPriority) {
+			if (cal.getEvents().get(i).getPriority() > minPriority) {
 				cal.getEvents().remove(i);
 				i--;
 			}
@@ -162,6 +165,7 @@ public class Driver {
 							} else {
 								System.out.println("Element " + split[1]
 										+ " is not supported");
+								error = true;
 							}
 						} else if (split[0].equalsIgnoreCase("VERSION")) {
 							if (!split[1].equalsIgnoreCase("2.0")) {
