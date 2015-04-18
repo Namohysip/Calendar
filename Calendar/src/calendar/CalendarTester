@@ -338,4 +338,198 @@ public class CalendarTester {
 		Driver.removeLowPriority(cal, 2);
 		assertTrue(cal.getEvents().size() == 0);
 	}
+	
+		/**
+	 * Testing of adding events.
+	 * Adding a blank event, event with proper start/finish times, events
+	 * with improper times, and two events with exact same start/end times
+	 */
+	@Test
+	public void testAddEvent() {
+		Event e = new Event();
+		iCalendar cal = new iCalendar();
+		
+		assertEquals(cal.getEvents().size(),0);
+		cal.addEvent(e);
+		assertEquals(cal.getEvents().size(),1);
+		
+	}
+	
+	@Test
+	public void testAddEvent2(){
+		String testTimeStart = "20150404T193000";
+		String testTimeEnd = "20150404T230000";
+		
+		iCalendar cal = new iCalendar();
+		
+		Event e = new Event("TestDescription", "TestSummary", "TestLocation", testTimeStart,
+				testTimeEnd, "TestClassT", 1);
+		
+		cal.addEvent(e);
+		
+		assertEquals(cal.getEvents().size(),1);
+	}
+	
+	@Test
+	public void testAddEvent3(){
+		String testTimeStart = "20150404T230000";
+		String testTimeEnd = "20150404T193000";
+		iCalendar cal = new iCalendar();
+		
+		Event e = new Event("TestDescription", "TestSummary", "TestLocation", testTimeStart,
+				testTimeEnd, "TestClassT", 1);
+		
+		cal.addEvent(e);
+		assertEquals(cal.getEvents().size(),0);
+	}
+	
+	@Test
+	public void testAddEvent4(){
+		String testTimeStart = "20150404T193000";
+		String testTimeEnd = "20150404T230000";
+
+		iCalendar cal = new iCalendar();
+		
+		Event e1 = new Event("TestDescription", "TestSummary", "TestLocation", testTimeStart,
+				testTimeEnd, "TestClassT", 1);
+		
+		Event e2 = new Event("TestDescription", "TestSummary", "TestLocation", testTimeStart,
+				testTimeEnd, "TestClassT", 1);
+		
+		cal.addEvent(e1);
+		assertEquals(cal.getEvents().size(),1);
+		
+		cal.addEvent(e2);
+		assertEquals(cal.getEvents().size(),1);
+	
+	}
+	
+	/**
+	 * Generates a calendar, creates an event, adds to calendar.
+	 * Tests if output matches the output of createics method.
+	 */
+	@Test
+	public void testCreateics() {
+		iCalendar cal = new iCalendar();
+		String output;
+		
+		String testTimeStart = "20150404T193000";
+		String testTimeEnd = "20150404T230000";
+		String testDescription = "Rapping";
+		String testSummary = "Mad flow";
+		String testLocation = "The studio";
+	
+
+		Event e1 = new Event(testDescription,testSummary,testLocation, testTimeStart,
+				testTimeEnd, "TestClassT", 1);
+		
+		String dtStamp = e1.getTimeCreated();
+		String dtCreate = e1.getTimeStamp();
+		String dtLastModified = e1.getLastModified();
+		
+		cal.addEvent(e1);
+		assertEquals(cal.getEvents().size(),1);
+		
+		output = cal.createics();
+	
+		String expected = ("BEGIN:VEVENT\n" + testTimeStart + "\n" + testTimeEnd + "\n" + 
+				dtStamp + "\nUID:\nCLASS:PUBLIC\n" + dtCreate + "\n" + testDescription
+				+ "\n" + dtLastModified + "\n" + testLocation + "\nSEQUENCE:0\n" +
+				"STATUS:CONFIRMED\n" + testSummary + "\nPRIORITY:0\nEND:VEVENT");
+		
+		
+		assertEquals(expected,output);
+		
+		
+	}
+
+	/**
+	 * unsure on how to test this. i think i need a plugin specific
+	 * to j-unit and find what directory it outputs to.
+	 */
+	@Test
+	public void testWriteics() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testSetEventSequence() {
+		fail("Not yet implemented");
+	}
+	
+	/**
+	 * Checks to see if getEvent returns null
+	 * upon entering index greater than total events.
+	 */
+	@Test
+	public void testGetEventSequence() {
+		iCalendar cal = new iCalendar();
+		Event e = new Event();
+		
+		cal.addEvent(e);
+		assertEquals(cal.getEvents().size(),1);
+		
+		assertNull(cal.getEvent(2));
+		
+	}
+	
+	@Test
+	public void testGetEventSequence2() {
+		iCalendar cal = new iCalendar();
+		Event e = new Event();
+		
+		cal.addEvent(e);
+		assertEquals(cal.getEvents().size(),1);
+		
+		assertNull(cal.getEvent(2));
+		
+	}
+	
+	@Test
+	public void testFindFreeTime() {
+		fail("Not yet implemented");
+	}
+
+	/**
+	 * Tests getEvent(s) method. Tests for returning null
+	 * on input index being greater size than array,
+	 * and tests for equivalent arraylists.
+	 */
+	@Test
+	public void testGetEvents() {
+		Event e = new Event();
+		iCalendar cal = new iCalendar();
+		ArrayList<Event> evArray = new ArrayList<Event>();
+		
+		evArray.add(e);
+		cal.addEvent(e);
+		
+		assertEquals(evArray,cal.getEvents());
+		
+		
+	}
+
+	@Test
+	public void testGetEvent() {
+		Event e = new Event();
+		iCalendar cal = new iCalendar();
+		
+		cal.addEvent(e);
+		
+		assertEquals(e,cal.getEvent(0));
+	}
+	
+	@Test
+	public void testGetEvent2(){
+		
+		iCalendar cal = new iCalendar();
+		assertNull(cal.getEvent(0));
+		
+		
+	}
+	
+	
+
+}
+
 }
