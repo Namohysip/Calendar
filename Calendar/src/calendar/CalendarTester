@@ -24,7 +24,7 @@ public class CalendarTester {
 		assertTrue(e.getSequence() == 0);
 		assertTrue(e.getPriority() == 0);
 		assertTrue(e.getUid().endsWith("@Rambutan.team"));
-		
+
 		assertTrue(e.getDateTimeS().equals("20150404T050000"));
 		assertTrue(e.getDateTimeE().equals("20150501T083000"));
 		assertTrue(e.getTimeStamp().equals("20150404T050000"));
@@ -50,7 +50,7 @@ public class CalendarTester {
 		assertTrue(e.getSequence() == 0);
 		assertTrue(e.getPriority() == 1);
 		assertTrue(e.getUid().endsWith("@Rambutan.team"));
-		
+
 		assertTrue(e.getDateTimeS().equals("20150404T050000"));
 		assertTrue(e.getDateTimeE().equals("20150501T083000"));
 		assertTrue(e.getTimeStamp().equals("20150404T050000"));
@@ -244,8 +244,8 @@ public class CalendarTester {
 	}
 
 	/**
-	 * Should be able to have the three good events even with
-	 * a bad file attached
+	 * Should be able to have the three good events even with a bad file
+	 * attached
 	 */
 	@Test
 	public void byFileTestGoodBad() {
@@ -262,13 +262,13 @@ public class CalendarTester {
 		assertTrue(e.getPriority() == 0);
 		assertTrue(e.getSummary().equals("Morning Routine"));
 	}
-	
+
 	/**
-	 * Should be able to have three good events even when the
-	 * first file is a bad file, but the next one is good
+	 * Should be able to have three good events even when the first file is a
+	 * bad file, but the next one is good
 	 */
 	@Test
-	public void byFileTestBadGood(){
+	public void byFileTestBadGood() {
 		iCalendar cal = Driver.byFile(new String[] {
 				"SourceTestFiles/testBad.ics", "SourceTestFiles/test.ics" });
 		assertTrue(cal.getEvents().size() == 3);
@@ -282,16 +282,18 @@ public class CalendarTester {
 		assertTrue(e.getPriority() == 0);
 		assertTrue(e.getSummary().equals("Morning Routine"));
 	}
-	
+
 	/**
-	 * Should be able to combine two good events and have them all in one calendar
+	 * Should be able to combine two good events and have them all in one
+	 * calendar
 	 */
 	@Test
-	public void byFileTestGoodGood(){
-		iCalendar cal = Driver.byFile(new String[] {
-				"SourceTestFiles/testPriority.ics", "SourceTestFiles/test.ics" });
+	public void byFileTestGoodGood() {
+		iCalendar cal = Driver
+				.byFile(new String[] { "SourceTestFiles/testPriority.ics",
+						"SourceTestFiles/test.ics" });
 		assertTrue(cal.getEvents().size() == 6);
-		
+
 		Event e = cal.getEvent(0);
 		assertTrue(e.getSummary().equals("Morning Routine"));
 		assertTrue(e.getDateTimeE().equals("20150404T100000"));
@@ -302,161 +304,159 @@ public class CalendarTester {
 		assertTrue(e.getPriority() == 5);
 		assertTrue(e.getSummary().equals("Morning Routine"));
 	}
-	
+
 	/**
-	 * Tests priority remover. If no events are below that priority,
-	 * then they should still be there afterward
+	 * Tests priority remover. If no events are below that priority, then they
+	 * should still be there afterward
 	 */
 	@Test
-	public void removePriorityTestNone(){
-		iCalendar cal = Driver.byFile(new String[] {
-				"SourceTestFiles/testPriority.ics"});
+	public void removePriorityTestNone() {
+		iCalendar cal = Driver
+				.byFile(new String[] { "SourceTestFiles/testPriority.ics" });
 		Driver.removeLowPriority(cal, 9);
 		assertTrue(cal.getEvents().size() == 3);
 	}
-	
+
 	/**
-	 * If all events are below that priority, then they should be
-	 * gone at an empty calendar afterward.
+	 * If all events are below that priority, then they should be gone at an
+	 * empty calendar afterward.
 	 */
 	@Test
-	public void removePriorityTestAll(){
-		iCalendar cal = Driver.byFile(new String[] {
-				"SourceTestFiles/testPriority.ics"});
+	public void removePriorityTestAll() {
+		iCalendar cal = Driver
+				.byFile(new String[] { "SourceTestFiles/testPriority.ics" });
 		Driver.removeLowPriority(cal, 1);
 		assertTrue(cal.getEvents().size() == 0);
 	}
-	
+
 	/**
-	 * IF some of the events are below that priority, then 
-	 * only those events should be removed
+	 * IF some of the events are below that priority, then only those events
+	 * should be removed
 	 */
 	@Test
-	public void removePriorityTestSome(){
-		iCalendar cal = Driver.byFile(new String[] {
-				"SourceTestFiles/testMultiPriority.ics"});
+	public void removePriorityTestSome() {
+		iCalendar cal = Driver
+				.byFile(new String[] { "SourceTestFiles/testMultiPriority.ics" });
 		Driver.removeLowPriority(cal, 2);
 		assertTrue(cal.getEvents().size() == 2);
 	}
-	
+
 	/**
-	 * Removing from an empty calendar should not return errors
-	 * and just return an empty calendar as it was.
+	 * Removing from an empty calendar should not return errors and just return
+	 * an empty calendar as it was.
 	 */
 	@Test
-	public void removePriorityTestEmpty(){
+	public void removePriorityTestEmpty() {
 		iCalendar cal = new iCalendar();
 		Driver.removeLowPriority(cal, 2);
 		assertTrue(cal.getEvents().size() == 0);
 	}
-	
-		/**
-	 * Testing of adding events.
-	 * Adding a blank event, event with proper start/finish times, events
-	 * with improper times, and two events with exact same start/end times
+
+	/**
+	 * Testing of adding events. Adding a blank event, event with proper
+	 * start/finish times, events with improper times, and two events with exact
+	 * same start/end times
 	 */
 	@Test
 	public void testAddEvent() {
 		Event e = new Event();
 		iCalendar cal = new iCalendar();
-		
-		assertEquals(cal.getEvents().size(),0);
+
+		assertEquals(cal.getEvents().size(), 0);
 		cal.addEvent(e);
-		assertEquals(cal.getEvents().size(),1);
-		
+		assertEquals(cal.getEvents().size(), 1);
+
 	}
-	
+
 	@Test
-	public void testAddEvent2(){
-		String testTimeStart = "20150404T193000";
-		String testTimeEnd = "20150404T230000";
-		
-		iCalendar cal = new iCalendar();
-		
-		Event e = new Event("TestDescription", "TestSummary", "TestLocation", testTimeStart,
-				testTimeEnd, "TestClassT", 1);
-		
-		cal.addEvent(e);
-		
-		assertEquals(cal.getEvents().size(),1);
-	}
-	
-	@Test
-	public void testAddEvent3(){
-		String testTimeStart = "20150404T230000";
-		String testTimeEnd = "20150404T193000";
-		iCalendar cal = new iCalendar();
-		
-		Event e = new Event("TestDescription", "TestSummary", "TestLocation", testTimeStart,
-				testTimeEnd, "TestClassT", 1);
-		
-		cal.addEvent(e);
-		assertEquals(cal.getEvents().size(),0);
-	}
-	
-	@Test
-	public void testAddEvent4(){
+	public void testAddEvent2() {
 		String testTimeStart = "20150404T193000";
 		String testTimeEnd = "20150404T230000";
 
 		iCalendar cal = new iCalendar();
-		
-		Event e1 = new Event("TestDescription", "TestSummary", "TestLocation", testTimeStart,
-				testTimeEnd, "TestClassT", 1);
-		
-		Event e2 = new Event("TestDescription", "TestSummary", "TestLocation", testTimeStart,
-				testTimeEnd, "TestClassT", 1);
-		
-		cal.addEvent(e1);
-		assertEquals(cal.getEvents().size(),1);
-		
-		cal.addEvent(e2);
-		assertEquals(cal.getEvents().size(),1);
-	
+
+		Event e = new Event("TestDescription", "TestSummary", "TestLocation",
+				testTimeStart, testTimeEnd, "TestClassT", 1);
+
+		cal.addEvent(e);
+
+		assertEquals(cal.getEvents().size(), 1);
 	}
-	
+
+	@Test
+	public void testAddEvent3() {
+		String testTimeStart = "20150404T230000";
+		String testTimeEnd = "20150404T193000";
+		iCalendar cal = new iCalendar();
+
+		Event e = new Event("TestDescription", "TestSummary", "TestLocation",
+				testTimeStart, testTimeEnd, "TestClassT", 1);
+
+		cal.addEvent(e);
+		assertEquals(cal.getEvents().size(), 0);
+	}
+
+	@Test
+	public void testAddEvent4() {
+		String testTimeStart = "20150404T193000";
+		String testTimeEnd = "20150404T230000";
+
+		iCalendar cal = new iCalendar();
+
+		Event e1 = new Event("TestDescription", "TestSummary", "TestLocation",
+				testTimeStart, testTimeEnd, "TestClassT", 1);
+
+		Event e2 = new Event("TestDescription", "TestSummary", "TestLocation",
+				testTimeStart, testTimeEnd, "TestClassT", 1);
+
+		cal.addEvent(e1);
+		assertEquals(cal.getEvents().size(), 1);
+
+		cal.addEvent(e2);
+		assertEquals(cal.getEvents().size(), 1);
+
+	}
+
 	/**
-	 * Generates a calendar, creates an event, adds to calendar.
-	 * Tests if output matches the output of createics method.
+	 * Generates a calendar, creates an event, adds to calendar. Tests if output
+	 * matches the output of createics method.
 	 */
 	@Test
 	public void testCreateics() {
 		iCalendar cal = new iCalendar();
 		String output;
-		
+
 		String testTimeStart = "20150404T193000";
 		String testTimeEnd = "20150404T230000";
 		String testDescription = "Rapping";
 		String testSummary = "Mad flow";
 		String testLocation = "The studio";
-	
 
-		Event e1 = new Event(testDescription,testSummary,testLocation, testTimeStart,
-				testTimeEnd, "TestClassT", 1);
-		
+		Event e1 = new Event(testDescription, testSummary, testLocation,
+				testTimeStart, testTimeEnd, "TestClassT", 1);
+
 		String dtStamp = e1.getTimeCreated();
 		String dtCreate = e1.getTimeStamp();
 		String dtLastModified = e1.getLastModified();
-		
+
 		cal.addEvent(e1);
-		assertEquals(cal.getEvents().size(),1);
-		
+		assertEquals(cal.getEvents().size(), 1);
+
 		output = cal.createics();
-	
-		String expected = ("BEGIN:VEVENT\n" + testTimeStart + "\n" + testTimeEnd + "\n" + 
-				dtStamp + "\nUID:\nCLASS:PUBLIC\n" + dtCreate + "\n" + testDescription
-				+ "\n" + dtLastModified + "\n" + testLocation + "\nSEQUENCE:0\n" +
-				"STATUS:CONFIRMED\n" + testSummary + "\nPRIORITY:0\nEND:VEVENT");
-		
-		
-		assertEquals(expected,output);
-		
-		
+
+		String expected = ("BEGIN:VEVENT\n" + testTimeStart + "\n"
+				+ testTimeEnd + "\n" + dtStamp + "\nUID:\nCLASS:PUBLIC\n"
+				+ dtCreate + "\n" + testDescription + "\n" + dtLastModified
+				+ "\n" + testLocation + "\nSEQUENCE:0\n" + "STATUS:CONFIRMED\n"
+				+ testSummary + "\nPRIORITY:0\nEND:VEVENT");
+
+		assertEquals(expected, output);
+
 	}
 
 	/**
-	 * unsure on how to test this. i think i need a plugin specific
-	 * to j-unit and find what directory it outputs to.
+	 * unsure on how to test this. i think i need a plugin specific to j-unit
+	 * and find what directory it outputs to.
 	 */
 	@Test
 	public void testWriteics() {
@@ -467,80 +467,73 @@ public class CalendarTester {
 	public void testSetEventSequence() {
 		fail("Not yet implemented");
 	}
-	
+
 	/**
-	 * Checks to see if getEvent returns null
-	 * upon entering index greater than total events.
+	 * Checks to see if getEvent returns null upon entering index greater than
+	 * total events.
 	 */
 	@Test
 	public void testGetEventSequence() {
 		iCalendar cal = new iCalendar();
 		Event e = new Event();
-		
+
 		cal.addEvent(e);
-		assertEquals(cal.getEvents().size(),1);
-		
+		assertEquals(cal.getEvents().size(), 1);
+
 		assertNull(cal.getEvent(2));
-		
+
 	}
-	
+
 	@Test
 	public void testGetEventSequence2() {
 		iCalendar cal = new iCalendar();
 		Event e = new Event();
-		
+
 		cal.addEvent(e);
-		assertEquals(cal.getEvents().size(),1);
-		
+		assertEquals(cal.getEvents().size(), 1);
+
 		assertNull(cal.getEvent(2));
-		
+
 	}
-	
+
 	@Test
 	public void testFindFreeTime() {
 		fail("Not yet implemented");
 	}
 
 	/**
-	 * Tests getEvent(s) method. Tests for returning null
-	 * on input index being greater size than array,
-	 * and tests for equivalent arraylists.
+	 * Tests getEvent(s) method. Tests for returning null on input index being
+	 * greater size than array, and tests for equivalent arraylists.
 	 */
 	@Test
 	public void testGetEvents() {
 		Event e = new Event();
 		iCalendar cal = new iCalendar();
 		ArrayList<Event> evArray = new ArrayList<Event>();
-		
+
 		evArray.add(e);
 		cal.addEvent(e);
-		
-		assertEquals(evArray,cal.getEvents());
-		
-		
+
+		assertEquals(evArray, cal.getEvents());
+
 	}
 
 	@Test
 	public void testGetEvent() {
 		Event e = new Event();
 		iCalendar cal = new iCalendar();
-		
+
 		cal.addEvent(e);
-		
-		assertEquals(e,cal.getEvent(0));
+
+		assertEquals(e, cal.getEvent(0));
 	}
-	
+
 	@Test
-	public void testGetEvent2(){
-		
+	public void testGetEvent2() {
+
 		iCalendar cal = new iCalendar();
 		assertNull(cal.getEvent(0));
-		
-		
-	}
-	
-	
 
-}
+	}
 
 }
