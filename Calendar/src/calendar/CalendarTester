@@ -8,12 +8,12 @@ import org.junit.Test;
 
 public class CalendarTester {
 	/*
-	  *Testing NO PARAMETER constructor of Event()
-	*/
+	 * Testing NO PARAMETER constructor of Event()
+	 */
 	@Test
 	public void eventConstructorTest() {
 		Event e = new Event();
-		
+
 		assertTrue(e.getDateTimeS() == null);
 		assertTrue(e.getDateTimeE() == null);
 		assertTrue(e.getClassType().equals("PUBLIC"));
@@ -21,19 +21,19 @@ public class CalendarTester {
 		assertTrue(e.getLocation().equals(""));
 		assertTrue(e.getStatus().equals("UNCONFIRMED"));
 		assertTrue(e.getSummary().equals(""));
-		assertTrue(e.getSequence()==0);
-		assertTrue(e.getPriority()==0);
-		System.out.println(e.getUid());
+		assertTrue(e.getSequence() == 0);
+		assertTrue(e.getPriority() == 0);
 		assertTrue(e.getUid().endsWith("@Rambutan.team"));
 	}
-	
+
 	/*
-	  *Testing WITH PARAMETERS constructor of Event()
-	*/
+	 * Testing WITH PARAMETERS constructor of Event()
+	 */
 	@Test
-	public void eventConstructorTest2(){
-		Event e = new Event("TestDescription", "TestSummary", "TestLocation", 		"TestTimeStart", "TestTimeEnd", "TestClassT", 1);
-		
+	public void eventConstructorTest2() {
+		Event e = new Event("TestDescription", "TestSummary", "TestLocation",
+				"TestTimeStart", "TestTimeEnd", "TestClassT", 1);
+
 		assertTrue(e.getDateTimeS().equals("TestTimeStart"));
 		assertTrue(e.getDateTimeE().equals("TestTimeEnd"));
 		assertTrue(e.getClassType().equals("TestClassT"));
@@ -41,36 +41,37 @@ public class CalendarTester {
 		assertTrue(e.getLocation().equals("TestLocation"));
 		assertTrue(e.getStatus().equals("CONFIRMED"));
 		assertTrue(e.getSummary().equals("TestSummary"));
-		assertTrue(e.getSequence()==0);
-		assertTrue(e.getPriority()==1);
-		assertTrue(e.getUid().endsWith("@Rambutan.team"));  /*since eventSequence was not initialized then it is concatinating nothing to "@Rambutan.team" but i could be wrong*/
-		assertTrue(iCalendar.getEventSequence()==1);
-		
+		assertTrue(e.getSequence() == 0);
+		assertTrue(e.getPriority() == 1);
+		assertTrue(e.getUid().endsWith("@Rambutan.team"));
+
 	}
+
 	/**
-	 * This test checks to make sure that adding an
-	 * event to iCalendar correctly adds it in to
-	 * the iCalendar event list.
+	 * This test checks to make sure that adding an event to iCalendar correctly
+	 * adds it in to the iCalendar event list.
 	 */
 	@Test
-	public void AddingEventToCalendarTest(){
+	public void AddingEventToCalendarTest() {
 		iCalendar cal = new iCalendar();
 		Event e = new Event();
 		assertEquals(cal.getEvents().size(), 0);
 		cal.addEvent(e);
 		assertEquals(cal.getEvents().size(), 1);
 	}
+
 	/**
-	 * This test checks to make sure if there is anything in 
-	 * the freeTime arraylist in iCalendar.
+	 * This test checks to make sure if there is anything in the freeTime
+	 * arraylist in iCalendar.
 	 */
 	@Test
-	public void FreeTimeTest(){
+	public void FreeTimeTest() {
 		iCalendar cal = new iCalendar();
-		ArrayList<Event> arrayEvents = new ArrayList<Event>(); 
+		ArrayList<Event> arrayEvents = new ArrayList<Event>();
 		assertEquals(cal.findFreeTime(arrayEvents, "Friday").size(), 1);
 	}
-		/**
+
+	/**
 	 * This test checks that checkTime(String) properly returns false for a
 	 * completely invalid entry for a date.
 	 */
@@ -192,28 +193,33 @@ public class CalendarTester {
 	public void dateTestI11() {
 		assertFalse(Driver.checkTime(2013, 11, 31, 0, 0, 0));
 	}
-	
-	
+
 	/**
 	 * byFile should return null if a file is empty
 	 */
 	@Test
-	public void byFileTestEmpty(){
-		assertTrue(Driver.byFile(new String[]{"SourceTestFiles/testNull.ics"}) == null);
+	public void byFileTestEmpty() {
+		assertTrue(Driver
+				.byFile(new String[] { "SourceTestFiles/testNull.ics" }) == null);
 	}
-	
+
 	/**
-	 * byFile should return null if the syntax for the calendar
-	 * itself is incorrect.
+	 * byFile should return null if the syntax for the calendar itself is
+	 * incorrect.
 	 */
 	@Test
-	public void byFileTestBadFormat(){
-		assertTrue(Driver.byFile(new String[]{"SourceTestFiles/testBad.ics"})==null);
+	public void byFileTestBadFormat() {
+		assertTrue(Driver
+				.byFile(new String[] { "SourceTestFiles/testBad.ics" }) == null);
 	}
-	
+
+	/**
+	 * byFile should work properly and have three events in the calendar
+	 */
 	@Test
-	public void byFileTestGoodFormat(){
-		iCalendar cal = Driver.byFile(new String[]{"SourceTestFiles/test.ics"});
+	public void byFileTestGoodFormat() {
+		iCalendar cal = Driver
+				.byFile(new String[] { "SourceTestFiles/test.ics" });
 		assertTrue(cal.getEvents().size() == 3);
 		Event e = cal.getEvent(0);
 		assertTrue(e.getSummary().equals("Morning Routine"));
@@ -224,5 +230,112 @@ public class CalendarTester {
 		assertTrue(e.getLocation().equals("Anywhere"));
 		assertTrue(e.getPriority() == 0);
 		assertTrue(e.getSummary().equals("Morning Routine"));
+	}
+
+	/**
+	 * Should be able to have the three good events even with
+	 * a bad file attached
+	 */
+	@Test
+	public void byFileTestGoodBad() {
+		iCalendar cal = Driver.byFile(new String[] {
+				"SourceTestFiles/test.ics", "SourceTestFiles/testBad.ics" });
+		assertTrue(cal.getEvents().size() == 3);
+		Event e = cal.getEvent(0);
+		assertTrue(e.getSummary().equals("Morning Routine"));
+		assertTrue(e.getDateTimeE().equals("20150404T100000"));
+		assertTrue(e.getDateTimeS().equals("20150404T050000"));
+		assertTrue(e.getClassType().equals("PUBLIC"));
+		assertTrue(e.getDescription().equals(""));
+		assertTrue(e.getLocation().equals("Anywhere"));
+		assertTrue(e.getPriority() == 0);
+		assertTrue(e.getSummary().equals("Morning Routine"));
+	}
+	
+	/**
+	 * Should be able to have three good events even when the
+	 * first file is a bad file, but the next one is good
+	 */
+	@Test
+	public void byFileTestBadGood(){
+		iCalendar cal = Driver.byFile(new String[] {
+				"SourceTestFiles/testBad.ics", "SourceTestFiles/test.ics" });
+		assertTrue(cal.getEvents().size() == 3);
+		Event e = cal.getEvent(0);
+		assertTrue(e.getSummary().equals("Morning Routine"));
+		assertTrue(e.getDateTimeE().equals("20150404T100000"));
+		assertTrue(e.getDateTimeS().equals("20150404T050000"));
+		assertTrue(e.getClassType().equals("PUBLIC"));
+		assertTrue(e.getDescription().equals(""));
+		assertTrue(e.getLocation().equals("Anywhere"));
+		assertTrue(e.getPriority() == 0);
+		assertTrue(e.getSummary().equals("Morning Routine"));
+	}
+	
+	/**
+	 * Should be able to combine two good events and have them all in one calendar
+	 */
+	@Test
+	public void byFileTestGoodGood(){
+		iCalendar cal = Driver.byFile(new String[] {
+				"SourceTestFiles/testPriority.ics", "SourceTestFiles/test.ics" });
+		assertTrue(cal.getEvents().size() == 6);
+		
+		Event e = cal.getEvent(0);
+		assertTrue(e.getSummary().equals("Morning Routine"));
+		assertTrue(e.getDateTimeE().equals("20150404T100000"));
+		assertTrue(e.getDateTimeS().equals("20150404T050000"));
+		assertTrue(e.getClassType().equals("PUBLIC"));
+		assertTrue(e.getDescription().equals(""));
+		assertTrue(e.getLocation().equals("Anywhere"));
+		assertTrue(e.getPriority() == 5);
+		assertTrue(e.getSummary().equals("Morning Routine"));
+	}
+	
+	/**
+	 * Tests priority remover. If no events are below that priority,
+	 * then they should still be there afterward
+	 */
+	@Test
+	public void removePriorityTestNone(){
+		iCalendar cal = Driver.byFile(new String[] {
+				"SourceTestFiles/testPriority.ics"});
+		Driver.removeLowPriority(cal, 9);
+		assertTrue(cal.getEvents().size() == 3);
+	}
+	
+	/**
+	 * If all events are below that priority, then they should be
+	 * gone at an empty calendar afterward.
+	 */
+	@Test
+	public void removePriorityTestAll(){
+		iCalendar cal = Driver.byFile(new String[] {
+				"SourceTestFiles/testPriority.ics"});
+		Driver.removeLowPriority(cal, 1);
+		assertTrue(cal.getEvents().size() == 0);
+	}
+	
+	/**
+	 * IF some of the events are below that priority, then 
+	 * only those events should be removed
+	 */
+	@Test
+	public void removePriorityTestSome(){
+		iCalendar cal = Driver.byFile(new String[] {
+				"SourceTestFiles/testMultiPriority.ics"});
+		Driver.removeLowPriority(cal, 2);
+		assertTrue(cal.getEvents().size() == 2);
+	}
+	
+	/**
+	 * Removing from an empty calendar should not return errors
+	 * and just return an empty calendar as it was.
+	 */
+	@Test
+	public void removePriorityTestEmpty(){
+		iCalendar cal = new iCalendar();
+		Driver.removeLowPriority(cal, 2);
+		assertTrue(cal.getEvents().size() == 0);
 	}
 }
