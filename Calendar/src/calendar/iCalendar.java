@@ -128,7 +128,7 @@ public class iCalendar {
 	public static int getEventSequence() {
 		return eventSequence;
 	}
-//possible alternative to find free time if it isn't sorted?
+	
 	/**
 	 * Finds free time for the day given.
 	 * Free time is defined as time when there are not
@@ -157,7 +157,7 @@ public class iCalendar {
 							.split("T")[1]);
 					freeEnd = Integer.parseInt(freeTime.get(i).getDateTimeE()
 							.split("T")[1]);
-					if (freeStart >= busyStart) {
+					if (freeStart >= busyStart) {//starts after busy time starts
 						if (freeStart < busyEnd) {
 							// freeTime starts during an event.
 							if (freeEnd <= busyEnd) {
@@ -174,8 +174,7 @@ public class iCalendar {
 								freeTime.get(i).setDateTimeS(newTime);
 								// free time now starts when that event ends
 							}
-						}
-						// else{free time started after event ended. Good. }
+						} // else{free time started after event ended. Good. }
 
 					} else {// free time starts before busy time starts
 						if (freeEnd > busyStart) {
@@ -187,6 +186,7 @@ public class iCalendar {
 									newTime = "0" + newTime;
 								}
 								newTime = day + "T" + newTime;
+								freeTime.get(i).setDateTimeE(newTime);
 								// free time now ends when that event starts
 							} else {// the busy time is completely during free
 									// time
