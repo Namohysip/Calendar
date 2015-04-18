@@ -24,6 +24,12 @@ public class CalendarTester {
 		assertTrue(e.getSequence() == 0);
 		assertTrue(e.getPriority() == 0);
 		assertTrue(e.getUid().endsWith("@Rambutan.team"));
+		
+		assertTrue(e.getDateTimeS().equals("20150404T050000"));
+		assertTrue(e.getDateTimeE().equals("20150501T083000"));
+		assertTrue(e.getTimeStamp().equals("20150404T050000"));
+		assertTrue(e.getTimeCreated().equals("20150404T050000"));
+		assertTrue(e.getLastModified().equals("20150404T050000"));
 	}
 
 	/*
@@ -44,7 +50,12 @@ public class CalendarTester {
 		assertTrue(e.getSequence() == 0);
 		assertTrue(e.getPriority() == 1);
 		assertTrue(e.getUid().endsWith("@Rambutan.team"));
-
+		
+		assertTrue(e.getDateTimeS().equals("20150404T050000"));
+		assertTrue(e.getDateTimeE().equals("20150501T083000"));
+		assertTrue(e.getTimeStamp().equals("20150404T050000"));
+		assertTrue(e.getTimeCreated().equals("20150404T050000"));
+		assertTrue(e.getLastModified().equals("20150404T050000"));
 	}
 
 	/**
