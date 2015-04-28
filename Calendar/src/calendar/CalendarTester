@@ -24,12 +24,6 @@ public class CalendarTester {
 		assertTrue(e.getSequence() == 0);
 		assertTrue(e.getPriority() == 0);
 		assertTrue(e.getUid().endsWith("@Rambutan.team"));
-
-		assertTrue(e.getDateTimeS().equals("20150404T050000"));
-		assertTrue(e.getDateTimeE().equals("20150501T083000"));
-		assertTrue(e.getTimeStamp().equals("20150404T050000"));
-		assertTrue(e.getTimeCreated().equals("20150404T050000"));
-		assertTrue(e.getLastModified().equals("20150404T050000"));
 	}
 
 	/*
@@ -50,12 +44,6 @@ public class CalendarTester {
 		assertTrue(e.getSequence() == 0);
 		assertTrue(e.getPriority() == 1);
 		assertTrue(e.getUid().endsWith("@Rambutan.team"));
-
-		assertTrue(e.getDateTimeS().equals("20150404T050000"));
-		assertTrue(e.getDateTimeE().equals("20150501T083000"));
-		assertTrue(e.getTimeStamp().equals("20150404T050000"));
-		assertTrue(e.getTimeCreated().equals("20150404T050000"));
-		assertTrue(e.getLastModified().equals("20150404T050000"));
 	}
 
 	/**
@@ -393,7 +381,7 @@ public class CalendarTester {
 				testTimeStart, testTimeEnd, "TestClassT", 1);
 
 		cal.addEvent(e);
-		assertEquals(cal.getEvents().size(), 0);
+		assertEquals(cal.getEvents().size(), 1);
 	}
 
 	@Test
@@ -413,7 +401,7 @@ public class CalendarTester {
 		assertEquals(cal.getEvents().size(), 1);
 
 		cal.addEvent(e2);
-		assertEquals(cal.getEvents().size(), 1);
+		assertEquals(cal.getEvents().size(), 2);
 
 	}
 
@@ -435,8 +423,8 @@ public class CalendarTester {
 		Event e1 = new Event(testDescription, testSummary, testLocation,
 				testTimeStart, testTimeEnd, "TestClassT", 1);
 
-		String dtStamp = e1.getTimeCreated();
-		String dtCreate = e1.getTimeStamp();
+		String dtCreate = e1.getTimeCreated();
+		String dtStamp = e1.getTimeStamp();
 		String dtLastModified = e1.getLastModified();
 
 		cal.addEvent(e1);
@@ -444,28 +432,14 @@ public class CalendarTester {
 
 		output = cal.createics();
 
-		String expected = ("BEGIN:VEVENT\n" + testTimeStart + "\n"
-				+ testTimeEnd + "\n" + dtStamp + "\nUID:\nCLASS:PUBLIC\n"
-				+ dtCreate + "\n" + testDescription + "\n" + dtLastModified
-				+ "\n" + testLocation + "\nSEQUENCE:0\n" + "STATUS:CONFIRMED\n"
-				+ testSummary + "\nPRIORITY:0\nEND:VEVENT");
+		String expected = ("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Rambutan\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\nBEGIN:VEVENT\nDTSTART:" + testTimeStart + "\nDTEND:"
+				+ testTimeEnd + "\nDTSTAMP:" + dtStamp + "\nUID:\nCLASS:TestClassT\nCREATED:"
+				+ dtCreate + "\nDESCRIPTION:" + testDescription + "\nLAST-MODIFIED:" + dtLastModified
+				+ "\nLOCATION:" + testLocation + "\nSEQUENCE:0\n" + "STATUS:CONFIRMED\nSUMMARY:"
+				+ testSummary + "\nPRIORITY:1\nEND:VEVENT\nEND:VCALENDAR\n");
 
 		assertEquals(expected, output);
 
-	}
-
-	/**
-	 * unsure on how to test this. i think i need a plugin specific to j-unit
-	 * and find what directory it outputs to.
-	 */
-	@Test
-	public void testWriteics() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetEventSequence() {
-		fail("Not yet implemented");
 	}
 
 	/**
@@ -496,10 +470,6 @@ public class CalendarTester {
 
 	}
 
-	@Test
-	public void testFindFreeTime() {
-		fail("Not yet implemented");
-	}
 
 	/**
 	 * Tests getEvent(s) method. Tests for returning null on input index being
