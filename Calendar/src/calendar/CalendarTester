@@ -505,5 +505,46 @@ public class CalendarTester {
 		assertNull(cal.getEvent(0));
 
 	}
+	/**
+	 * Tests free time with overlapping events
+	 */
+	@Test
+	public void testFreeFinder() {
+		iCalendar cal = Driver.byFile(new String[]{"SourceTestFiles/test.ics"});
+		cal = Driver.findFreeTime(cal, "20150404");
+		assertTrue(cal.getEvents().size() == 3);
+		Event e = cal.getEvent(0);
+		assertTrue(e.getDateTimeS().equals("20150404T000001"));
+		assertTrue(e.getDateTimeE().equals("20150404T050000"));
+		e = cal.getEvent(1);
+		assertTrue(e.getDateTimeS().equals("20150404T110000"));
+		assertTrue(e.getDateTimeE().equals("20150404T193000"));
+		e = cal.getEvent(2);
+		assertTrue(e.getDateTimeS().equals("20150404T230000"));
+		assertTrue(e.getDateTimeE().equals("20150404T235959"));
+	}
+	
+	/**
+	 * Tests free time when the events take up the entire day.
+	 */
+	@Test
+	public void testFreeFinder2() {
+		iCalendar cal = Driver.byFile(new String[]{"SourceTestFiles/freetest.ics"});
+		cal = Driver.findFreeTime(cal, "20150404");
+		assertTrue(cal.getEvents().size() == 0);
+	}
+	
+	/**
+	 * Tests free time when there are no events.
+	 */
+	@Test
+	public void testFreeFinder3() {
+		iCalendar cal = new iCalendar();
+		cal = Driver.findFreeTime(cal, "20150404");
+		assertTrue(cal.getEvents().size() == 1);
+		Event e = cal.getEvent(0);
+		assertTrue(e.getDateTimeS().equals("20150404T000001"));
+		assertTrue(e.getDateTimeE().equals("20150404T235959"));
+	}
 
 }
